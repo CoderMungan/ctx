@@ -56,6 +56,18 @@ func Unwired() bool {
 	return !PluginEnabled(Home())
 }
 
+// ProjectConfigured reports whether the project-local Codex
+// integration is already deployed in the current working
+// directory (`.codex/hooks.json` exists). `ctx setup codex`
+// prefers this state label over the plugin detection states.
+//
+// Returns:
+//   - bool: true when `.codex/hooks.json` exists at $PWD
+func ProjectConfigured() bool {
+	_, statErr := os.Stat(cfgSetup.HooksPathCodex)
+	return statErr == nil
+}
+
 // PluginInstalled reports whether the ctx plugin is present in
 // the Codex plugin cache
 // (<home>/plugins/cache/<marketplace>/<plugin>/<version>/).

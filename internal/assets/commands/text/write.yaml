@@ -165,6 +165,8 @@ write.hook-codex-summary-plugin:
     AGENTS: AGENTS.md
 write.hook-codex-state:
   short: 'Codex: %s'
+write.hook-codex-state-configured:
+  short: 'project-local integration configured (.codex/hooks.json present)'
 write.hook-codex-state-absent:
   short: codex binary not found on PATH (install from https://github.com/openai/codex)
 write.hook-codex-state-not-installed:

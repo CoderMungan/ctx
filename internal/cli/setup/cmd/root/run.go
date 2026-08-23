@@ -83,7 +83,14 @@ func Run(cmd *cobra.Command, args []string, writeFile bool) error {
 			return coreCodex.Deploy(cmd)
 		}
 		writeSetup.InfoTool(cmd, desc.Text(text.DescKeyHookCodex))
-		writeSetup.InfoCodexState(cmd, codex.Detect().String())
+		if codex.ProjectConfigured() {
+			writeSetup.InfoCodexState(
+				cmd,
+				desc.Text(text.DescKeyWriteHookCodexStateConfigured),
+			)
+		} else {
+			writeSetup.InfoCodexState(cmd, codex.Detect().String())
+		}
 
 	case cfgHook.ToolAider:
 		writeSetup.InfoTool(cmd, desc.Text(text.DescKeyHookAider))

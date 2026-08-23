@@ -386,7 +386,8 @@ hook.codex:
     OpenAI Codex Integration
     ========================
 
-    Codex runs the same ctx lifecycle hooks as Claude Code and
+    Codex runs the ctx lifecycle hooks (context packet on session
+    start, persistence nudges, command gates, journal capture) and
     reads AGENTS.md natively. Two delivery routes:
 
     Plugin route (once per machine, every project):

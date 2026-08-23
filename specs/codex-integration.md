@@ -202,7 +202,7 @@ setup hint print this; the docs repeat it.
 
 | Command | Behavior |
 |---------|----------|
-| `ctx setup codex` | prints overview + detection state + both install routes |
+| `ctx setup codex` | prints overview + both install routes + state: `configured` when `.codex/hooks.json` exists, else the plugin detection state |
 | `ctx setup codex --write` | deploys project-local integration (see Happy Path) |
 | `ctx journal import` (all forms) | now also discovers Codex rollouts |
 | `ctx steering sync` / `--tool codex` | polite skip for non-synced tools |

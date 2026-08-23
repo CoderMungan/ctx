@@ -65,6 +65,9 @@ const (
 	// DescKeyWriteHookCodexState is the text key for the detection state
 	// line printed by `ctx setup codex`.
 	DescKeyWriteHookCodexState = "write.hook-codex-state"
+	// DescKeyWriteHookCodexStateConfigured is the state label used when
+	// the project-local Codex integration is already deployed.
+	DescKeyWriteHookCodexStateConfigured = "write.hook-codex-state-configured"
 	// DescKeyWriteHookCodexStateAbsent labels the state where the codex
 	// binary is not on PATH.
 	DescKeyWriteHookCodexStateAbsent = "write.hook-codex-state-absent"
