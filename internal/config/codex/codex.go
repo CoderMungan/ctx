@@ -135,7 +135,18 @@ const (
 	// starts with. Codex runs hooks with the session cwd (which
 	// may be a subdirectory), and ctx is CWD-anchored, so the
 	// command must `cd` to the project root first.
-	HookAnchor = `cd "$(git rev-parse --show-toplevel)" && `
+	HookAnchor = `cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)" && `
+
+	// LegacyHookAnchor is the anchor shipped by earlier builds
+	// (no fallback when the cwd is outside a git repo — Codex can
+	// run hooks from non-repo directories, where the bare form
+	// exits 1 before ctx starts). Recognized so merges migrate
+	// previously deployed groups instead of duplicating them.
+	LegacyHookAnchor = `cd "$(git rev-parse --show-toplevel)" && `
+	// LegacyHookCommandPrefix is [LegacyHookAnchor] followed by a
+	// ctx invocation — the ctx-managed command shape earlier
+	// builds deployed.
+	LegacyHookCommandPrefix = LegacyHookAnchor + "ctx "
 
 	// HookCommandPrefix is the full prefix of every ctx-managed
 	// hook command: the git-root anchor followed by a ctx binary

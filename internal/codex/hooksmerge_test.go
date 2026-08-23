@@ -230,3 +230,53 @@ func TestMergeHooks_ForeignAnchoredGroupSurvives(t *testing.T) {
 		t.Fatalf("embedded ctx group missing:\n%s", out)
 	}
 }
+
+// TestMergeHooks_LegacyAnchorGroupMigrates guards migration: a
+// ctx group deployed by an earlier build (bare git-root anchor,
+// no non-repo fallback) is recognized as ctx-managed and replaced
+// by the current manifest instead of being duplicated.
+func TestMergeHooks_LegacyAnchorGroupMigrates(t *testing.T) {
+	existing := []byte(`{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system context-load-gate"
+          }
+        ]
+      }
+    ]
+  }
+}`)
+	embedded := []byte(`{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system context-load-gate"
+          }
+        ]
+      }
+    ]
+  }
+}`)
+	out, outcome, mergeErr := MergeHooks(existing, embedded)
+	if mergeErr != nil {
+		t.Fatalf("MergeHooks: %v", mergeErr)
+	}
+	if outcome != OutcomeMerged {
+		t.Fatalf("outcome = %v, want OutcomeMerged", outcome)
+	}
+	if strings.Count(string(out), "context-load-gate") != 1 {
+		t.Fatalf("legacy group not migrated (duplicated or dropped):\n%s", out)
+	}
+	if !strings.Contains(string(out), "|| pwd") {
+		t.Fatalf("migrated group lacks tolerant anchor:\n%s", out)
+	}
+}

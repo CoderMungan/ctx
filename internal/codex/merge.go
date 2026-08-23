@@ -87,7 +87,11 @@ func managed(group json.RawMessage) bool {
 		); cmdErr != nil {
 			return false
 		}
-		if !strings.HasPrefix(command, cfgCodex.HookCommandPrefix) {
+		current := strings.HasPrefix(command, cfgCodex.HookCommandPrefix)
+		legacy := strings.HasPrefix(
+			command, cfgCodex.LegacyHookCommandPrefix,
+		)
+		if !current && !legacy {
 			return false
 		}
 	}

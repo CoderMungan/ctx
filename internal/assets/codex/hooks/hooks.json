@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx agent --budget 8000 2>/dev/null || true",
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx agent --budget 8000 2>/dev/null || true",
             "statusMessage": "Loading ctx context packet",
             "additionalContextLimit": 10000
           }
@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system context-load-gate"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system context-load-gate"
           }
         ]
       },
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system block-non-path-ctx"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system block-non-path-ctx"
           }
         ]
       },
@@ -37,7 +37,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system qa-reminder"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system qa-reminder"
           }
         ]
       },
@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system specs-nudge"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system specs-nudge"
           }
         ]
       }
@@ -57,7 +57,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system post-commit"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system post-commit"
           }
         ]
       },
@@ -66,7 +66,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-task-completion"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-task-completion"
           }
         ]
       }
@@ -76,55 +76,55 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-context-size"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-context-size"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-ceremony"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-ceremony"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-persistence"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-persistence"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-journal"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-journal"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-reminder"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-reminder"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-version"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-version"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-resource"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-resource"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-knowledge"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-knowledge"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-map-staleness"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-map-staleness"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-memory-drift"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-memory-drift"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-freshness"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-freshness"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system check-skill-discovery"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system check-skill-discovery"
           },
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx system heartbeat"
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx system heartbeat"
           }
         ]
       }
@@ -134,7 +134,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$(git rev-parse --show-toplevel)\" && ctx journal import --all -y >/dev/null 2>&1 || true",
+            "command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\" && ctx journal import --all -y >/dev/null 2>&1 || true",
             "timeout": 3
           }
         ]
