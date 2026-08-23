@@ -111,6 +111,9 @@ sed -i.bak -E "s/\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"/\"version\": \"${VERSIO
 rm -f "${CODEX_PLUGIN_JSON}.bak"
 sed -i.bak -E "s/\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"/\"version\": \"${VERSION_NUM}\"/" "${CODEX_MARKETPLACE_JSON}"
 rm -f "${CODEX_MARKETPLACE_JSON}.bak"
+DUAL_PLUGIN_JSON="internal/assets/claude/.codex-plugin/plugin.json"
+sed -i.bak -E "s/\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"/\"version\": \"${VERSION_NUM}\"/" "${DUAL_PLUGIN_JSON}"
+rm -f "${DUAL_PLUGIN_JSON}.bak"
 
 # Update VS Code extension version
 VSCODE_PKG="editors/vscode/package.json"
@@ -157,7 +160,7 @@ make site
 
 # Commit docs and site updates
 echo "Committing documentation updates..."
-git add docs/index.md docs/home/getting-started.md docs/operations/integrations.md docs/reference/versions.md site/ "${PLUGIN_JSON}" "${MARKETPLACE_JSON}" "${CODEX_PLUGIN_JSON}" "${CODEX_MARKETPLACE_JSON}" "${VSCODE_PKG}" "${VSCODE_LOCK}"
+git add docs/index.md docs/home/getting-started.md docs/operations/integrations.md docs/reference/versions.md site/ "${PLUGIN_JSON}" "${MARKETPLACE_JSON}" "${CODEX_PLUGIN_JSON}" "${CODEX_MARKETPLACE_JSON}" "${DUAL_PLUGIN_JSON}" "${VSCODE_PKG}" "${VSCODE_LOCK}"
 git diff --cached --quiet || git commit -m "docs: update download links and versions page for ${VERSION}"
 echo ""
 

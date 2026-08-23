@@ -1,0 +1,21 @@
+{
+  "name": "ctx",
+  "version": "0.8.1",
+  "description": "Persistent context for AI coding assistants",
+  "author": {
+    "name": "Context contributors",
+    "url": "https://ctx.ist"
+  },
+  "homepage": "https://ctx.ist",
+  "repository": "https://github.com/ActiveMemory/ctx",
+  "license": "Apache-2.0",
+  "skills": "./skills/",
+  "hooks": "./hooks/codex.json",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "ctx",
+    "shortDescription": "Persistent project memory for Codex",
+    "developerName": "Context contributors",
+    "category": "Developer Tools"
+  }
+}

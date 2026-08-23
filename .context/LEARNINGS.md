@@ -28,6 +28,16 @@ DO NOT UPDATE FOR:
 -->
 
 
+## [2026-08-23-162206] Codex marketplace resolution diverges between CLI and TUI; dual-manifest plugin roots close it
+
+**Context**: With both .agents/plugins/marketplace.json and legacy .claude-plugin/marketplace.json at the same root (same marketplace name, same plugin name), codex 0.148/0.149 CLI 'plugin add' resolved the .agents one, but the 0.149 TUI /plugins browser re-materialized the cache from the LEGACY one — silently swapping the installed ctx plugin back to the Claude variant whose ${CLAUDE_PROJECT_DIR:?} hooks all exit 1 under Codex (seen live as 13 UserPromptSubmit + 4 PreToolUse hook failures).
+
+**Lesson**: Codex plugin-root ingestion prefers .codex-plugin/plugin.json when a root carries both manifest dirs (proven with a scratch legacy-only marketplace + marker hook). So a dual-manifest plugin root — .codex-plugin/plugin.json with hooks: ./hooks/codex.json next to the Claude manifest — yields working Codex hooks regardless of which marketplace file any Codex code path resolves.
+
+**Application**: internal/assets/claude is now dual-manifest (codex.json synced by hack/sync-codex-skills.sh, byte-parity guarded by TestClaudeRootDualManifest). If Codex hooks suddenly fail with exit 1 en masse, check the cache root for a missing .codex-plugin/ and restart the codex session after reinstalling.
+
+---
+
 ## [2026-08-23-154756] Codex marketplace add falls back to the legacy .claude-plugin marketplace
 
 **Context**: User ran 'codex plugin marketplace add ActiveMemory/ctx' before the Codex marketplace landed on main. Codex 0.148 cloned GitHub main, found no .agents/plugins/marketplace.json, and silently used the legacy-compatible .claude-plugin/marketplace.json — installing the CLAUDE plugin variant (CLAUDE_PROJECT_DIR-anchored hooks that cannot run under Codex) into ~/.codex/plugins/cache under the same name and version.

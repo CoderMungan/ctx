@@ -49,6 +49,12 @@ if [ -f "$CODEX_PLUGIN_JSON" ] && command -v jq &> /dev/null; then
     mv "${CODEX_PLUGIN_JSON}.tmp" "$CODEX_PLUGIN_JSON"
   echo "Codex plugin version synced to ${VERSION}"
 fi
+DUAL_PLUGIN_JSON="${ROOT_DIR}/internal/assets/claude/.codex-plugin/plugin.json"
+if [ -f "$DUAL_PLUGIN_JSON" ] && command -v jq &> /dev/null; then
+  jq --arg v "$VERSION" '.version = $v' "$DUAL_PLUGIN_JSON" > "${DUAL_PLUGIN_JSON}.tmp" && \
+    mv "${DUAL_PLUGIN_JSON}.tmp" "$DUAL_PLUGIN_JSON"
+  echo "Dual-manifest plugin version synced to ${VERSION}"
+fi
 
 # Clean and create output directory (preserve RELEASE_NOTES.md if it exists)
 if [ -f "${OUTPUT_DIR}/RELEASE_NOTES.md" ]; then

@@ -7,6 +7,7 @@
 package assets
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/fs"
 	"os"
@@ -644,5 +645,53 @@ func TestCodexSkillReferencesShipped(t *testing.T) {
 				)
 			}
 		}
+	}
+}
+
+// TestClaudeRootDualManifest guards the dual-manifest defense: the
+// Claude plugin root must carry a .codex-plugin manifest whose
+// hooks entry points at a byte-copy of the canonical Codex hooks
+// manifest, so a Codex that resolves the legacy
+// .claude-plugin/marketplace.json still installs working hooks.
+func TestClaudeRootDualManifest(t *testing.T) {
+	manifestPath := filepath.Join(
+		"claude", cfgCodex.DirPluginManifest, "plugin.json",
+	)
+	data, readErr := os.ReadFile(filepath.Clean(manifestPath))
+	if readErr != nil {
+		t.Fatalf("dual manifest missing: %v", readErr)
+	}
+	var manifest struct {
+		Name    string `json:"name"`
+		Version string `json:"version"`
+		Hooks   string `json:"hooks"`
+	}
+	if jsonErr := json.Unmarshal(data, &manifest); jsonErr != nil {
+		t.Fatalf("dual manifest parse: %v", jsonErr)
+	}
+	if manifest.Name != cfgCodex.PluginName {
+		t.Errorf("name = %q, want %q", manifest.Name, cfgCodex.PluginName)
+	}
+	if manifest.Version != repoVersion(t) {
+		t.Errorf("version = %q, want VERSION %q",
+			manifest.Version, repoVersion(t))
+	}
+	if manifest.Hooks != "./hooks/codex.json" {
+		t.Errorf("hooks = %q, want ./hooks/codex.json", manifest.Hooks)
+	}
+
+	claudeCopy, copyErr := os.ReadFile(filepath.Clean(
+		filepath.Join("claude", "hooks", "codex.json"),
+	))
+	if copyErr != nil {
+		t.Fatalf("hooks/codex.json missing: %v", copyErr)
+	}
+	canonical, canonErr := FS.ReadFile(asset.PathCodexHooksJSON)
+	if canonErr != nil {
+		t.Fatalf("embedded codex manifest: %v", canonErr)
+	}
+	if !bytes.Equal(claudeCopy, canonical) {
+		t.Error("claude/hooks/codex.json diverges from " +
+			"codex/hooks/hooks.json — run hack/sync-codex-skills.sh")
 	}
 }

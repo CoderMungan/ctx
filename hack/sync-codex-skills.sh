@@ -79,4 +79,10 @@ for codex_dir in "$CODEX_SKILLS"/*/; do
   fi
 done
 
+# The Claude plugin root is dual-manifest: its .codex-plugin/plugin.json
+# points Codex at hooks/codex.json, so a Codex that resolves the legacy
+# .claude-plugin marketplace still gets working hooks. Keep that file a
+# byte-copy of the canonical Codex manifest.
+cp internal/assets/codex/hooks/hooks.json internal/assets/claude/hooks/codex.json
+
 echo "Codex skills synced: $synced updated, $skipped Claude-only (excluded), $removed removed."

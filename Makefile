@@ -35,6 +35,8 @@ sync-version:
 	mv internal/assets/claude/.claude-plugin/plugin.json.tmp internal/assets/claude/.claude-plugin/plugin.json; \
 	jq --arg v "$$V" '.version = $$v' internal/assets/codex/.codex-plugin/plugin.json > internal/assets/codex/.codex-plugin/plugin.json.tmp && \
 	mv internal/assets/codex/.codex-plugin/plugin.json.tmp internal/assets/codex/.codex-plugin/plugin.json; \
+	jq --arg v "$$V" '.version = $$v' internal/assets/claude/.codex-plugin/plugin.json > internal/assets/claude/.codex-plugin/plugin.json.tmp && \
+	mv internal/assets/claude/.codex-plugin/plugin.json.tmp internal/assets/claude/.codex-plugin/plugin.json; \
 	jq --arg v "$$V" '.metadata.version = $$v' .agents/plugins/marketplace.json > .agents/plugins/marketplace.json.tmp && \
 	mv .agents/plugins/marketplace.json.tmp .agents/plugins/marketplace.json; \
 	echo "Plugin version synced to $$V"
@@ -378,6 +380,11 @@ check-version-sync:
 	CV=$$(jq -r '.version' internal/assets/codex/.codex-plugin/plugin.json); \
 	if [ "$$V" != "$$CV" ]; then \
 		echo "FAIL: VERSION ($$V) != codex plugin.json ($$CV) — run 'make sync-version'"; \
+		exit 1; \
+	fi; \
+	DV=$$(jq -r '.version' internal/assets/claude/.codex-plugin/plugin.json); \
+	if [ "$$V" != "$$DV" ]; then \
+		echo "FAIL: VERSION ($$V) != claude-root codex plugin.json ($$DV) — run 'make sync-version'"; \
 		exit 1; \
 	fi; \
 	MV=$$(jq -r '.metadata.version' .agents/plugins/marketplace.json); \
