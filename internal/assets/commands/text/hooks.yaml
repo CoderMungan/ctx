@@ -381,6 +381,35 @@ hook.aider:
     ```bash
     ctx agent | aider --message "$(cat -)"
     ```
+hook.codex:
+  short: |
+    OpenAI Codex Integration
+    ========================
+
+    Codex runs the same ctx lifecycle hooks as Claude Code and
+    reads AGENTS.md natively. Two delivery routes:
+
+    Plugin route (once per machine, every project):
+
+      codex plugin marketplace add ActiveMemory/ctx
+      codex plugin add ctx@activememory-ctx
+
+    Project-local route (this repository only):
+
+      ctx setup codex --write
+
+    This creates:
+      .codex/hooks.json                    Lifecycle hooks
+      .codex/config.toml                   [mcp_servers.ctx] MCP server
+      .agents/skills/ctx-*/SKILL.md        ctx skills ($ctx-remember ...)
+      AGENTS.md                            Agent instructions
+
+    After either route, open codex and run /hooks to review and
+    trust the ctx hooks; Codex does not run untrusted hooks.
+
+    Project-local .codex/ layers load only for trusted projects:
+    set trust_level = "trusted" for this path in ~/.codex/config.toml
+    (Codex asks on first launch).
 hook.copilot:
   short: |
     GitHub Copilot Integration
@@ -430,7 +459,10 @@ hook.supported-tools:
     Supported tools:
       agents       - AGENTS.md (universal agent instructions)
       claude-code  - Anthropic's Claude Code CLI (use plugin instead)
+      codex        - OpenAI Codex CLI (hooks, MCP, skills)
       cursor       - Cursor IDE
+      kiro         - Kiro IDE
+      cline        - Cline (VS Code extension)
       aider        - Aider AI coding assistant
       copilot      - GitHub Copilot (VS Code extension)
       copilot-cli  - GitHub Copilot CLI (terminal agent)

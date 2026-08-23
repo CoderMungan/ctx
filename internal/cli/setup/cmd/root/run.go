@@ -14,11 +14,13 @@ import (
 	coreCC "github.com/ActiveMemory/ctx/internal/cli/initialize/core/claudecheck"
 	coreAgents "github.com/ActiveMemory/ctx/internal/cli/setup/core/agents"
 	coreCline "github.com/ActiveMemory/ctx/internal/cli/setup/core/cline"
+	coreCodex "github.com/ActiveMemory/ctx/internal/cli/setup/core/codex"
 	coreCopilot "github.com/ActiveMemory/ctx/internal/cli/setup/core/copilot"
 	coreCopCLI "github.com/ActiveMemory/ctx/internal/cli/setup/core/copilotcli"
 	coreCursor "github.com/ActiveMemory/ctx/internal/cli/setup/core/cursor"
 	coreKiro "github.com/ActiveMemory/ctx/internal/cli/setup/core/kiro"
 	coreOpenCode "github.com/ActiveMemory/ctx/internal/cli/setup/core/opencode"
+	"github.com/ActiveMemory/ctx/internal/codex"
 	"github.com/ActiveMemory/ctx/internal/config/embed/text"
 	cfgHook "github.com/ActiveMemory/ctx/internal/config/hook"
 	"github.com/ActiveMemory/ctx/internal/err/config"
@@ -75,6 +77,13 @@ func Run(cmd *cobra.Command, args []string, writeFile bool) error {
 			return coreCline.Deploy(cmd)
 		}
 		writeSetup.InfoClineIntegration(cmd)
+
+	case cfgHook.ToolCodex:
+		if writeFile {
+			return coreCodex.Deploy(cmd)
+		}
+		writeSetup.InfoTool(cmd, desc.Text(text.DescKeyHookCodex))
+		writeSetup.InfoCodexState(cmd, codex.Detect().String())
 
 	case cfgHook.ToolAider:
 		writeSetup.InfoTool(cmd, desc.Text(text.DescKeyHookAider))
