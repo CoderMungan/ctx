@@ -1,5 +1,18 @@
 # Learnings
 
+<!-- INDEX:START -->
+| Date | Learning |
+|----|--------|
+| 2026-08-23 | Codex trust and hook wiring facts verified against codex 0.148 |
+| 2026-08-23 | hack scripts must survive macOS /bin/bash 3.2 and BSD grep |
+| 2026-08-23 | make lint SA5011 false positives mean a corrupted golangci-lint cache |
+| 2026-07-25 | Using the proprietary sibling repo as design evidence leaks its internals into tracked files |
+| 2026-07-25 | Skill and doc examples of a serialized structure must round-trip through the real parser |
+| 2026-07-25 | A guard derived from a capability accessor silently lifts when the accessor is extended |
+| 2026-07-19 | The disclosure parser is a deliberately dumb line-scanner (skips <!-- --> comments, not code fences) |
+| 2026-07-19 | Measurement gates surface a real bug in every disclosure milestone |
+<!-- INDEX:END -->
+
 <!--
 UPDATE WHEN:
 - Discover a gotcha, bug, or unexpected behavior
@@ -14,6 +27,36 @@ DO NOT UPDATE FOR:
 - Opinions without evidence
 -->
 
+
+## [2026-08-23-125635] Codex trust and hook wiring facts verified against codex 0.148
+
+**Context**: Live-tested the ctx Codex integration with codex exec on Codex CLI 0.148.0.
+
+**Lesson**: (1) Project .codex/hooks.json loads only when the project path is trusted in the REAL ~/.codex/config.toml; a -c 'projects."...".trust_level="trusted"' CLI override is ignored for trust. (2) SessionStart plain-text stdout is injected verbatim as a developer message. (3) Codex's code-mode unified exec matches hook matcher 'Bash', and the legacy {"decision":"block"} shape blocks it. (4) SessionEnd hooks fire on codex exec process exit and ctx journal import completes within the 3 s cap. (5) trust for a parent dir (/Users/x) does NOT extend to subdirectories.
+
+**Application**: When debugging 'ctx hooks not firing in Codex', check project trust in ~/.codex/config.toml first; do not suggest -c trust overrides.
+
+---
+
+## [2026-08-23-125635] hack scripts must survive macOS /bin/bash 3.2 and BSD grep
+
+**Context**: make audit failed on macOS with 'unexpected EOF while looking for matching quote' in hack/lint-docstrings.sh (shebang #!/bin/bash = macOS bash 3.2.57). Root cause: bash 3.2's $( ) re-parser treats an apostrophe inside a COMMENT (didn't) as an open quote. Separately, the script's grep -cP (PCRE) silently fails on BSD grep, turning fieldcount empty and emitting 59 MISSING_FIELDS false positives.
+
+**Lesson**: Two portability traps in hack/*.sh: (1) no apostrophes in comments inside command substitutions (bash 3.2 chokes); (2) no grep -P (BSD grep lacks PCRE) — use grep -E with a literal tab via TAB=$(printf '\t') and [[:space:]]. CI on Linux hides both.
+
+**Application**: When adding hack scripts, test with /bin/bash (not Homebrew bash) on macOS; prefer 'did not' over contractions in comments inside $( ); use grep -E with POSIX classes.
+
+---
+
+## [2026-08-23-125635] make lint SA5011 false positives mean a corrupted golangci-lint cache
+
+**Context**: make lint failed with 6 staticcheck SA5011 'possible nil pointer dereference' findings in test files untouched by the branch (if x == nil { t.Fatal } followed by x.Field). The flagged file set VARIED between runs (serve/compat one run, bootstrap/init the next).
+
+**Lesson**: Nondeterministic staticcheck SA5011 on the guarded nil-check pattern is a corrupted golangci-lint build cache, not real findings. 'golangci-lint cache clean && make lint' returned 0 issues.
+
+**Application**: Before chasing staticcheck findings in files a branch never touched, check whether the finding set is stable across two runs; if it varies, clean the golangci-lint cache first.
+
+---
 
 ## [2026-07-25-124457] Using the proprietary sibling repo as design evidence leaks its internals into tracked files
 
