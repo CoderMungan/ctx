@@ -83,12 +83,16 @@ func Run(cmd *cobra.Command, args []string, writeFile bool) error {
 			return coreCodex.Deploy(cmd)
 		}
 		writeSetup.InfoTool(cmd, desc.Text(text.DescKeyHookCodex))
-		if codex.ProjectConfigured() {
+		switch {
+		case codex.ProjectConfigured():
 			writeSetup.InfoCodexState(
 				cmd,
 				desc.Text(text.DescKeyWriteHookCodexStateConfigured),
 			)
-		} else {
+		case codex.PluginEnabled(codex.Home()) &&
+			!codex.PluginNativeVariant(codex.Home()):
+			writeSetup.InfoCodexPluginWrongVariant(cmd)
+		default:
 			writeSetup.InfoCodexState(cmd, codex.Detect().String())
 		}
 

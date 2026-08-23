@@ -211,11 +211,26 @@ func TestDeploySkills_RejectsSymlinkTarget(t *testing.T) {
 	}
 }
 
+// seedCodexVariantCache creates an installed-plugin cache copy
+// carrying the Codex manifest dir, so PluginNativeVariant is true.
+func seedCodexVariantCache(t *testing.T, home string) {
+	t.Helper()
+	manifest := filepath.Join(
+		home, cfgCodex.DirPlugins, cfgCodex.DirPluginCache,
+		cfgCodex.MarketplaceID, cfgCodex.PluginName, "0.8.1",
+		cfgCodex.DirPluginManifest,
+	)
+	if mkErr := os.MkdirAll(filepath.Clean(manifest), 0o755); mkErr != nil {
+		t.Fatal(mkErr)
+	}
+}
+
 func TestDeploy_PluginEnabledShortCircuitsToAgentsMd(t *testing.T) {
 	withTempProjectDir(t)
 	home := os.Getenv(cfgCodex.EnvHome)
 	seedFile(t, filepath.Join(home, cfgCodex.FileConfigTOML),
 		[]byte(cfgCodex.TOMLHeaderPluginCtx+"\nenabled = true\n"))
+	seedCodexVariantCache(t, home)
 
 	var buf bytes.Buffer
 	if err := Deploy(testCmd(&buf)); err != nil {
@@ -233,6 +248,40 @@ func TestDeploy_PluginEnabledShortCircuitsToAgentsMd(t *testing.T) {
 	}
 	if !strings.Contains(buf.String(), "plugin is enabled") {
 		t.Fatalf("expected plugin-active notice:\n%s", buf.String())
+	}
+}
+
+// TestDeploy_PluginWrongVariantDeploysEverything covers the
+// customer without Claude Code whose plugin install silently
+// delivered the legacy Claude variant: Deploy must not
+// short-circuit; it warns and deploys the project-local route.
+func TestDeploy_PluginWrongVariantDeploysEverything(t *testing.T) {
+	withTempProjectDir(t)
+	home := os.Getenv(cfgCodex.EnvHome)
+	seedFile(t, filepath.Join(home, cfgCodex.FileConfigTOML),
+		[]byte(cfgCodex.TOMLHeaderPluginCtx+"\nenabled = true\n"))
+	// Claude-variant cache: manifest dir is .claude-plugin/.
+	claudeManifest := filepath.Join(
+		home, cfgCodex.DirPlugins, cfgCodex.DirPluginCache,
+		cfgCodex.MarketplaceID, cfgCodex.PluginName, "0.8.1",
+		".claude-plugin",
+	)
+	if mkErr := os.MkdirAll(filepath.Clean(claudeManifest), 0o755); mkErr != nil {
+		t.Fatal(mkErr)
+	}
+
+	var buf bytes.Buffer
+	if err := Deploy(testCmd(&buf)); err != nil {
+		t.Fatalf("Deploy: %v", err)
+	}
+	if _, statErr := os.Stat(cfgSetup.HooksPathCodex); statErr != nil {
+		t.Fatal("hooks.json not deployed despite wrong-variant plugin")
+	}
+	if _, statErr := os.Stat(cfgSetup.MCPConfigPathCodex); statErr != nil {
+		t.Fatal("config.toml not deployed despite wrong-variant plugin")
+	}
+	if !strings.Contains(buf.String(), "not the Codex variant") {
+		t.Fatalf("expected wrong-variant warning:\n%s", buf.String())
 	}
 }
 

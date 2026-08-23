@@ -141,6 +141,18 @@ write.hook-codex-plugin-active:
     The ctx Codex plugin is enabled in ~/.codex/config.toml, so hooks,
     MCP, and skills already reach every project. Skipping .codex/ and
     .agents/skills/ (Codex would run each hook twice); deploying AGENTS.md only.
+write.hook-codex-plugin-wrong-variant:
+  short: |-
+    warning: a ctx plugin is enabled in ~/.codex/config.toml but its
+    installed cache is not the Codex variant (no .codex-plugin/ —
+    typically the legacy Claude Code variant from a marketplace
+    source without .agents/plugins/marketplace.json). Its hooks
+    cannot run under Codex, so the project-local integration is
+    deployed instead. To fix the plugin:
+      codex plugin remove ctx@activememory-ctx
+      codex plugin marketplace remove activememory-ctx
+      codex plugin marketplace add <source with .agents/plugins/marketplace.json>
+      codex plugin add ctx@activememory-ctx
 write.hook-codex-summary:
   short: |-
     Codex will now:

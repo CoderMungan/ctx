@@ -30,11 +30,19 @@ import (
 //   - error: Non-nil if the hooks manifest cannot be written
 //     (other errors are warned but do not halt deployment)
 func Deploy(cmd *cobra.Command) error {
-	if codex.PluginEnabled(codex.Home()) {
-		writeSetup.InfoCodexPluginActive(cmd)
-		deployAgents(cmd)
-		writeSetup.InfoCodexSummaryPlugin(cmd)
-		return nil
+	home := codex.Home()
+	if codex.PluginEnabled(home) {
+		if codex.PluginNativeVariant(home) {
+			writeSetup.InfoCodexPluginActive(cmd)
+			deployAgents(cmd)
+			writeSetup.InfoCodexSummaryPlugin(cmd)
+			return nil
+		}
+		// A plugin is enabled but the cached copy is the legacy
+		// Claude Code variant (installed from a revision without
+		// the Codex marketplace). Its hooks cannot run under
+		// Codex, so deploy the project-local route in full.
+		writeSetup.InfoCodexPluginWrongVariant(cmd)
 	}
 
 	if hooksErr := deployHooks(cmd); hooksErr != nil {

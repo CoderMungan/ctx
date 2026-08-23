@@ -55,6 +55,10 @@ const (
 	// DescKeyWriteHookCodexPluginActive is the text key for the notice
 	// printed when the ctx Codex plugin already provides hooks/skills/MCP.
 	DescKeyWriteHookCodexPluginActive = "write.hook-codex-plugin-active"
+	// DescKeyWriteHookCodexPluginWrongVariant is the text key for the
+	// warning printed when the enabled plugin is the legacy Claude
+	// Code variant and the project-local route is deployed instead.
+	DescKeyWriteHookCodexPluginWrongVariant = "write.hook-codex-plugin-wrong-variant"
 	// DescKeyWriteHookCodexSummary is the text key for write hook codex
 	// summary messages.
 	DescKeyWriteHookCodexSummary = "write.hook-codex-summary"

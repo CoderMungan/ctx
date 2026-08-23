@@ -204,7 +204,14 @@ func TestUnwired(t *testing.T) {
 		t.Fatal("codex present, nothing wired: want unwired")
 	}
 
+	// Enabled in config but no Codex-variant cache (stale flag or
+	// legacy Claude variant): still unwired, the hint must show.
 	writeConfig(t, home, cfgCodex.TOMLHeaderPluginCtx+"\n")
+	if !Unwired() {
+		t.Fatal("plugin enabled without codex-variant cache: want unwired")
+	}
+
+	seedVariantCache(t, home)
 	if Unwired() {
 		t.Fatal("plugin enabled: want wired")
 	}
@@ -242,5 +249,54 @@ func TestSkillManaged(t *testing.T) {
 				t.Fatalf("SkillManaged = %v, want %v", got, tc.want)
 			}
 		})
+	}
+}
+
+// TestPluginNativeVariant distinguishes the Codex plugin cache
+// layout (.codex-plugin/) from the legacy Claude Code variant
+// (.claude-plugin/) that a stale marketplace source delivers.
+func TestPluginNativeVariant(t *testing.T) {
+	home := fakeHome(t)
+	version := filepath.Join(
+		home, cfgCodex.DirPlugins, cfgCodex.DirPluginCache,
+		cfgCodex.MarketplaceID, cfgCodex.PluginName, "0.8.1",
+	)
+
+	if PluginNativeVariant(home) {
+		t.Fatal("no cache: want false")
+	}
+
+	// Claude variant: .claude-plugin/ manifest dir.
+	if mkErr := os.MkdirAll(
+		filepath.Join(version, ".claude-plugin"), 0o755,
+	); mkErr != nil {
+		t.Fatal(mkErr)
+	}
+	if PluginNativeVariant(home) {
+		t.Fatal("claude variant: want false")
+	}
+
+	// Codex variant appears (e.g. after reinstall).
+	if mkErr := os.MkdirAll(
+		filepath.Join(version, cfgCodex.DirPluginManifest), 0o755,
+	); mkErr != nil {
+		t.Fatal(mkErr)
+	}
+	if !PluginNativeVariant(home) {
+		t.Fatal("codex variant present: want true")
+	}
+}
+
+// seedVariantCache creates a cached plugin copy with the Codex
+// manifest dir so PluginNativeVariant reports true.
+func seedVariantCache(t *testing.T, home string) {
+	t.Helper()
+	manifest := filepath.Join(
+		home, cfgCodex.DirPlugins, cfgCodex.DirPluginCache,
+		cfgCodex.MarketplaceID, cfgCodex.PluginName, "0.8.1",
+		cfgCodex.DirPluginManifest,
+	)
+	if mkErr := os.MkdirAll(filepath.Clean(manifest), 0o755); mkErr != nil {
+		t.Fatal(mkErr)
 	}
 }

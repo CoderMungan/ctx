@@ -280,6 +280,17 @@ func InfoCodexPluginActive(cmd *cobra.Command) {
 	cmd.Println(desc.Text(text.DescKeyWriteHookCodexPluginActive))
 }
 
+// InfoCodexPluginWrongVariant warns that the enabled ctx Codex
+// plugin is the legacy Claude Code variant and that the
+// project-local route is being deployed instead.
+//
+// Parameters:
+//   - cmd: Cobra command for output
+func InfoCodexPluginWrongVariant(cmd *cobra.Command) {
+	cmd.Println(desc.Text(text.DescKeyWriteHookCodexPluginWrongVariant))
+	cmd.Println()
+}
+
 // InfoCodexSummary prints the post-write summary for Codex,
 // ending with the /hooks trust reminder.
 //

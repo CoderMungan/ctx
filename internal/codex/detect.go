@@ -53,7 +53,46 @@ func Unwired() bool {
 	if _, statErr := os.Stat(cfgSetup.HooksPathCodex); statErr == nil {
 		return false
 	}
-	return !PluginEnabled(Home())
+	home := Home()
+	return !PluginEnabled(home) || !PluginNativeVariant(home)
+}
+
+// PluginNativeVariant reports whether the installed ctx plugin is
+// the Codex variant: at least one cached version root contains
+// `.codex-plugin/`. A GitHub install from a revision that predates
+// the Codex marketplace silently delivers the legacy Claude Code
+// variant (`.claude-plugin/`), whose hooks cannot run under Codex;
+// the deployer must not treat that as a working plugin.
+//
+// Parameters:
+//   - home: Codex home directory (see [Home])
+//
+// Returns:
+//   - bool: true when a cached copy carries `.codex-plugin/`
+func PluginNativeVariant(home string) bool {
+	if home == "" {
+		return false
+	}
+	pluginDir := filepath.Join(
+		home, cfgCodex.DirPlugins, cfgCodex.DirPluginCache,
+		cfgCodex.MarketplaceID, cfgCodex.PluginName,
+	)
+	entries, readErr := os.ReadDir(pluginDir)
+	if readErr != nil {
+		return false
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		manifest := filepath.Join(
+			pluginDir, entry.Name(), cfgCodex.DirPluginManifest,
+		)
+		if _, statErr := os.Stat(manifest); statErr == nil {
+			return true
+		}
+	}
+	return false
 }
 
 // ProjectConfigured reports whether the project-local Codex

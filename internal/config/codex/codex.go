@@ -60,6 +60,11 @@ const (
 
 	// FileMCPJSON is the plugin-bundled MCP server map file name.
 	FileMCPJSON = ".mcp.json"
+	// DirPluginManifest is the manifest directory inside a plugin
+	// root (`.codex-plugin/`). Its presence in an installed cache
+	// copy identifies the Codex plugin variant; a cache holding
+	// the legacy Claude Code variant has `.claude-plugin/` instead.
+	DirPluginManifest = ".codex-plugin"
 )
 
 // Plugin identity.
