@@ -28,6 +28,16 @@ DO NOT UPDATE FOR:
 -->
 
 
+## [2026-08-23-154756] Codex marketplace add falls back to the legacy .claude-plugin marketplace
+
+**Context**: User ran 'codex plugin marketplace add ActiveMemory/ctx' before the Codex marketplace landed on main. Codex 0.148 cloned GitHub main, found no .agents/plugins/marketplace.json, and silently used the legacy-compatible .claude-plugin/marketplace.json — installing the CLAUDE plugin variant (CLAUDE_PROJECT_DIR-anchored hooks that cannot run under Codex) into ~/.codex/plugins/cache under the same name and version.
+
+**Lesson**: Codex marketplace resolution: .agents/plugins/marketplace.json is preferred when both exist (verified with a local dir containing both), but a source revision lacking it silently falls back to .claude-plugin/marketplace.json. The wrong variant is detectable by .claude-plugin/ in the installed cache root. Also: ctx's plugin-enabled detection cannot distinguish variants, so ctx setup codex --write short-circuits even when the wrong variant is installed.
+
+**Application**: Until the branch is merged, install the Codex plugin from a local checkout of feat/codex-integration. When debugging 'plugin installed but hooks error', check the cache root for .claude-plugin/. Documented in docs/home/codex.md troubleshooting.
+
+---
+
 ## [2026-08-23-125635] Codex trust and hook wiring facts verified against codex 0.148
 
 **Context**: Live-tested the ctx Codex integration with codex exec on Codex CLI 0.148.0.

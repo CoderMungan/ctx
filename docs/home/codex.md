@@ -298,6 +298,8 @@ An imported Claude manifest carries none of that.
 |---------|-------|-----|
 | No context packet at session start | Hooks not trusted yet | Run `/hooks` in `codex` and trust the `ctx` entries |
 | Hooks trusted but nothing fires in this project | Project not trusted, so `.codex/` layers are ignored | Add `[projects."<abs path>"] trust_level = "trusted"` to `~/.codex/config.toml` |
+| Plugin install delivered Claude hooks (cache has `.claude-plugin/`, hook commands reference `CLAUDE_PROJECT_DIR`) | The marketplace source revision predates the Codex marketplace, so Codex fell back to the legacy `.claude-plugin/marketplace.json` | `codex plugin remove ctx@activememory-ctx && codex plugin marketplace remove activememory-ctx`, then re-add from a checkout/ref that contains `.agents/plugins/marketplace.json`. When both files exist, Codex prefers the `.agents` one (verified on 0.148) |
+| Hooks run twice after installing the plugin | Project-local `.codex/hooks.json` and the plugin both load | Pick one route: delete the project's `.codex/hooks.json` and `.agents/skills/` (keep `AGENTS.md`) when moving to the plugin |
 | Every nudge appears twice | Plugin enabled **and** `.codex/hooks.json` present | Remove one: `codex plugin remove ctx@activememory-ctx` or delete the `ctx` groups from `.codex/hooks.json` |
 | `ctx: command not found` inside a hook | `ctx` not on the PATH Codex inherits | `which ctx`; install to a PATH directory (the `block-non-path-ctx` hook exists for exactly this) |
 | `SessionEnd` hook reports a timeout | First import of a long backlog exceeded 3 s | Run `ctx journal import --all` once by hand; later runs are incremental |
