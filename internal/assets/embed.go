@@ -18,8 +18,6 @@ import (
 //go:embed context/*.md project/* entry-templates/*.md integrations/agents.md
 //go:embed integrations/copilot/*.md
 //go:embed integrations/copilot-cli/*.json integrations/copilot-cli/*.md
-//go:embed integrations/copilot-cli/scripts/*.sh
-//go:embed integrations/copilot-cli/scripts/*.ps1
 //go:embed integrations/copilot-cli/skills/*/SKILL.md
 //go:embed integrations/opencode/plugin/index.ts
 //go:embed integrations/opencode/skills/*/SKILL.md

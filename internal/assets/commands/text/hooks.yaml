@@ -429,9 +429,12 @@ hook.copilot-cli:
     for the GitHub Copilot CLI agent (cross-platform).
 
     This creates:
-      .github/hooks/ctx-hooks.json    Hook configuration
-      .github/hooks/scripts/*.sh      Bash scripts (Linux/macOS/WSL)
-      .github/hooks/scripts/*.ps1     PowerShell scripts (Windows)
+      .github/hooks/ctx-hooks.json           Hook configuration
+      .github/agents/ctx.md                  Agent definition
+      .github/instructions/context.instructions.md
+
+    Hook commands invoke `ctx system ...` directly with a
+    repo-root cwd; no wrapper scripts are written.
 
     Run with --write to generate all files:
 

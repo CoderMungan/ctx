@@ -9,11 +9,9 @@ package agent
 import (
 	"io/fs"
 	"path"
-	"strings"
 
 	"github.com/ActiveMemory/ctx/internal/assets"
 	"github.com/ActiveMemory/ctx/internal/config/asset"
-	"github.com/ActiveMemory/ctx/internal/config/file"
 )
 
 // CopilotInstructions reads the embedded Copilot instructions template.
@@ -60,40 +58,6 @@ func AgentsCtxMd() ([]byte, error) {
 //   - error: Non-nil if the file is not found or read fails
 func InstructionsCtxMd() ([]byte, error) {
 	return assets.FS.ReadFile(asset.PathInstructionsCtxMd)
-}
-
-// CopilotCLIScripts reads all embedded Copilot CLI hook scripts.
-// Returns a map of filename to content for scripts in
-// integrations/copilot-cli/scripts/.
-//
-// Returns:
-//   - map[string][]byte: Filename -> content for each script
-//   - error: Non-nil if the directory read fails
-func CopilotCLIScripts() (map[string][]byte, error) {
-	scripts := make(map[string][]byte)
-	entries, dirErr := fs.ReadDir(assets.FS, asset.DirIntegrationsCopilotScrp)
-	if dirErr != nil {
-		return nil, dirErr
-	}
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-		name := entry.Name()
-		shExt := strings.HasSuffix(name, file.ExtSh)
-		ps1Ext := strings.HasSuffix(name, file.ExtPs1)
-		if !shExt && !ps1Ext {
-			continue
-		}
-		p := path.Join(
-			asset.DirIntegrationsCopilotScrp, name)
-		content, readErr := assets.FS.ReadFile(p)
-		if readErr != nil {
-			return nil, readErr
-		}
-		scripts[name] = content
-	}
-	return scripts, nil
 }
 
 // OpenCodePlugin reads all embedded OpenCode plugin files.

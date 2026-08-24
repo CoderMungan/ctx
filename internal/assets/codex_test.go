@@ -34,7 +34,7 @@ import (
 // [cfgCodex.HookAnchor] instead (Codex runs hooks with the session
 // cwd, not a project-dir env var); parity is asserted on the
 // `ctx …` tails that follow the anchors.
-const claudeHookAnchor = `cd "${CLAUDE_PROJECT_DIR:?CLAUDE_PROJECT_DIR unset; cannot anchor ctx}" && `
+const claudeHookAnchor = `command -v ctx >/dev/null 2>&1 || exit 0; [ -d "${CLAUDE_PROJECT_DIR:-}" ] || { echo "ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)" >&2; exit 1; }; cd "$CLAUDE_PROJECT_DIR" && `
 
 // agentTailPrefix identifies the context-packet hook. Claude Code
 // wires it under PreToolUse (plain stdout becomes context there);

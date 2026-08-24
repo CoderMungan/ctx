@@ -24,7 +24,6 @@ const (
 	DirIntegrations               = "integrations"
 	DirIntegrationsCopilot        = "integrations/copilot"
 	DirIntegrationsCopilotCLI     = "integrations/copilot-cli"
-	DirIntegrationsCopilotScrp    = "integrations/copilot-cli/scripts"
 	DirIntegrationsCopilotSkill   = "integrations/copilot-cli/skills"
 	DirIntegrationsOpenCodePlugin = "integrations/opencode/plugin"
 	DirIntegrationsOpenCodeSkill  = "integrations/opencode/skills"
