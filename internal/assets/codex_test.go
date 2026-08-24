@@ -29,12 +29,12 @@ import (
 // it (.agents/plugins/marketplace.json). See
 // specs/codex-integration.md "Validation Rules".
 
-// claudeHookAnchor is the project-root anchor every command in the
+// claudeHookAnchor is the host-detecting prologue every command in the
 // Claude Code manifest starts with. The Codex manifest uses
 // [cfgCodex.HookAnchor] instead (Codex runs hooks with the session
 // cwd, not a project-dir env var); parity is asserted on the
 // `ctx …` tails that follow the anchors.
-const claudeHookAnchor = `command -v ctx >/dev/null 2>&1 || exit 0; [ -d "${CLAUDE_PROJECT_DIR:-}" ] || { echo "ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)" >&2; exit 1; }; cd "$CLAUDE_PROJECT_DIR" && `
+const claudeHookAnchor = `command -v ctx >/dev/null 2>&1 || exit 0; [ -n "${CLAUDE_PROJECT_DIR:-}" ] || exit 0; [ -d "$CLAUDE_PROJECT_DIR" ] || { echo "ctx: CLAUDE_PROJECT_DIR \"$CLAUDE_PROJECT_DIR\" is missing; restart the session at the project root" >&2; exit 1; }; cd "$CLAUDE_PROJECT_DIR" && `
 
 // agentTailPrefix identifies the context-packet hook. Claude Code
 // wires it under PreToolUse (plain stdout becomes context there);

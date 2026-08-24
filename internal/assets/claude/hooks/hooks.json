@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system context-load-gate"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system context-load-gate"
           }
         ]
       },
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system block-non-path-ctx"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system block-non-path-ctx"
           }
         ]
       },
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system qa-reminder"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system qa-reminder"
           }
         ]
       },
@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system specs-nudge"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system specs-nudge"
           }
         ]
       },
@@ -42,7 +42,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx agent --budget 8000 2>/dev/null || true"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx agent --budget 8000 2>/dev/null || true"
           }
         ]
       }
@@ -53,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system post-commit"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system post-commit"
           }
         ]
       },
@@ -62,7 +62,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-task-completion"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-task-completion"
           }
         ]
       },
@@ -71,7 +71,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-task-completion"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-task-completion"
           }
         ]
       }
@@ -81,55 +81,55 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-context-size"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-context-size"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-ceremony"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-ceremony"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-persistence"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-persistence"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-journal"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-journal"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-reminder"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-reminder"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-version"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-version"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-resource"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-resource"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-knowledge"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-knowledge"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-map-staleness"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-map-staleness"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-memory-drift"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-memory-drift"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-freshness"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-freshness"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-skill-discovery"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system check-skill-discovery"
           },
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system heartbeat"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx system heartbeat"
           }
         ]
       }
@@ -139,7 +139,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -d \"${CLAUDE_PROJECT_DIR:-}\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR unset or missing; cannot anchor ctx (restart the session at the project root)\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx journal import --all -y >/dev/null 2>&1 || true"
+            "command": "command -v ctx >/dev/null 2>&1 || exit 0; [ -n \"${CLAUDE_PROJECT_DIR:-}\" ] || exit 0; [ -d \"$CLAUDE_PROJECT_DIR\" ] || { echo \"ctx: CLAUDE_PROJECT_DIR \\\"$CLAUDE_PROJECT_DIR\\\" is missing; restart the session at the project root\" >&2; exit 1; }; cd \"$CLAUDE_PROJECT_DIR\" && ctx journal import --all -y >/dev/null 2>&1 || true"
           }
         ]
       }
