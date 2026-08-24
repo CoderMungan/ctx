@@ -65,3 +65,25 @@ func TestEnsureMCPTable_SkipsWhenHeaderPresent(t *testing.T) {
 		t.Fatalf("skipped output must be the input bytes")
 	}
 }
+
+// TestEnsureMCPTable_HeaderVariants guards the tolerant header
+// matching: trailing comments and quoted key segments must all
+// count as an existing registration (no duplicate table appended).
+func TestEnsureMCPTable_HeaderVariants(t *testing.T) {
+	variants := []string{
+		"[mcp_servers.ctx]\n",
+		"  [mcp_servers.ctx]  \n",
+		"[mcp_servers.ctx] # registered by hand\n",
+		"[mcp_servers.\"ctx\"]\n",
+		"[mcp_servers.'ctx']\n",
+	}
+	for _, v := range variants {
+		if _, outcome := EnsureMCPTable([]byte(v)); outcome != OutcomeSkipped {
+			t.Errorf("variant %q: outcome %v, want Skipped", v, outcome)
+		}
+	}
+	foreign := "[mcp_servers.ctxother]\n"
+	if _, outcome := EnsureMCPTable([]byte(foreign)); outcome == OutcomeSkipped {
+		t.Errorf("unrelated header %q wrongly detected", foreign)
+	}
+}

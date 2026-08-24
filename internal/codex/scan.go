@@ -32,7 +32,57 @@ func tomlAssign() string {
 //   - bool: true when the header line exists
 func tableHeaderPresent(data []byte) bool {
 	for _, line := range splitLines(data) {
-		if strings.TrimSpace(line) == cfgCodex.TOMLHeaderMCPCtx {
+		if headerLine(line, cfgCodex.TOMLHeaderMCPCtx) {
+			return true
+		}
+	}
+	return false
+}
+
+// headerLine reports whether a config.toml line is the given table
+// header, tolerating equivalent spellings: leading whitespace, a
+// trailing comment or whitespace after the closing bracket, and a
+// quoted last key segment ([t.k] vs [t."k"] vs [t.'k']). Inline
+// tables ([parent] with k = {...}) remain undetected — an accepted
+// limit of the never-parse-TOML design, documented in the spec.
+//
+// Parameters:
+//   - line: raw config.toml line
+//   - header: canonical header (e.g. `[mcp_servers.ctx]`)
+//
+// Returns:
+//   - bool: true when the line spells this header
+func headerLine(line, header string) bool {
+	trimmed := strings.TrimSpace(line)
+	inner := strings.TrimSuffix(
+		strings.TrimPrefix(header, cfgCodex.TOMLBracketOpen),
+		cfgCodex.TOMLBracketClose,
+	)
+	dot := strings.LastIndex(inner, cfgCodex.TOMLDot)
+	variants := []string{header}
+	if dot >= 0 {
+		parent, key := inner[:dot], inner[dot+1:]
+		bare := strings.Trim(
+			key, cfgCodex.TOMLQuoteBasic+cfgCodex.TOMLQuoteLiteral,
+		)
+		for _, quoted := range []string{
+			bare,
+			cfgCodex.TOMLQuoteBasic + bare + cfgCodex.TOMLQuoteBasic,
+			cfgCodex.TOMLQuoteLiteral + bare + cfgCodex.TOMLQuoteLiteral,
+		} {
+			variants = append(variants,
+				cfgCodex.TOMLBracketOpen+parent+
+					cfgCodex.TOMLDot+quoted+
+					cfgCodex.TOMLBracketClose,
+			)
+		}
+	}
+	for _, v := range variants {
+		if !strings.HasPrefix(trimmed, v) {
+			continue
+		}
+		rest := strings.TrimSpace(trimmed[len(v):])
+		if rest == "" || strings.HasPrefix(rest, cfgCodex.TOMLComment) {
 			return true
 		}
 	}

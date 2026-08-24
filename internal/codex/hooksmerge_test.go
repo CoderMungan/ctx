@@ -87,7 +87,7 @@ func TestMergeHooks_PreservesForeignReplacesStale(t *testing.T) {
       ` + foreignGroup + `,
       ` + ctxGroup("ctx system stale-command") + `
     ],
-    "Stop": [` + foreignGroup + `],
+    "PreCompact": [` + foreignGroup + `],
     "SessionEnd": [` + ctxGroup("ctx journal import --all -y") + `]
   }
 }
@@ -112,7 +112,7 @@ func TestMergeHooks_PreservesForeignReplacesStale(t *testing.T) {
 	if got.Description != "user description" {
 		t.Fatalf("description overwritten: %q", got.Description)
 	}
-	if len(got.Hooks[cfgCodex.EventStop]) != 1 {
+	if len(got.Hooks[cfgCodex.EventPreCompact]) != 1 {
 		t.Fatal("event only in existing file was not preserved")
 	}
 	want := parse(t, embedded)
@@ -278,5 +278,51 @@ func TestMergeHooks_LegacyAnchorGroupMigrates(t *testing.T) {
 	}
 	if !strings.Contains(string(out), "|| pwd") {
 		t.Fatalf("migrated group lacks tolerant anchor:\n%s", out)
+	}
+}
+
+// TestMergeHooks_MixedGroupKeepsUserHandlers guards the mixed-group
+// rule: a user handler added inside a deployed ctx group survives,
+// the ctx handlers in that group are stripped (the fresh embedded
+// groups replace them), and nothing duplicates.
+func TestMergeHooks_MixedGroupKeepsUserHandlers(t *testing.T) {
+	ctxHandler := map[string]string{
+		"type":    "command",
+		"command": cfgCodex.HookCommandPrefix + "system qa-reminder",
+	}
+	userHandler := map[string]string{
+		"type":    "command",
+		"command": "echo mine",
+	}
+	build := func(handlers ...map[string]string) []byte {
+		doc := map[string]any{
+			"hooks": map[string]any{
+				"PreToolUse": []any{
+					map[string]any{
+						"matcher": "Bash",
+						"hooks":   handlers,
+					},
+				},
+			},
+		}
+		out, marshalErr := json.Marshal(doc)
+		if marshalErr != nil {
+			t.Fatal(marshalErr)
+		}
+		return out
+	}
+
+	existing := build(ctxHandler, userHandler)
+	embedded := build(ctxHandler)
+
+	out, _, mergeErr := MergeHooks(existing, embedded)
+	if mergeErr != nil {
+		t.Fatalf("MergeHooks: %v", mergeErr)
+	}
+	if strings.Count(string(out), "qa-reminder") != 1 {
+		t.Fatalf("ctx handler duplicated or lost:\n%s", out)
+	}
+	if !strings.Contains(string(out), "echo mine") {
+		t.Fatalf("user handler lost:\n%s", out)
 	}
 }

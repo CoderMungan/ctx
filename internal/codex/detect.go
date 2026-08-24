@@ -165,7 +165,7 @@ func PluginEnabled(home string) bool {
 	found := false
 	for _, raw := range splitLines(data) {
 		line := strings.TrimSpace(raw)
-		if line == cfgCodex.TOMLHeaderPluginCtx {
+		if headerLine(line, cfgCodex.TOMLHeaderPluginCtx) {
 			inTable = true
 			found = true
 			continue

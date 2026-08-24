@@ -88,16 +88,36 @@ func (p *Codex) applyEvent(s *entity.Session, payload json.RawMessage) {
 	if unmarshalErr := json.Unmarshal(payload, &ev); unmarshalErr != nil {
 		return
 	}
-	if ev.Type != cfgCodex.EventTokenCount || ev.Info == nil {
-		return
+	switch ev.Type {
+	case cfgCodex.EventTokenCount:
+		if ev.Info == nil {
+			return
+		}
+		// input_tokens is cumulative AND includes cached prompt
+		// tokens; subtract the cache so totals are comparable
+		// with the Claude parser's TotalTokensIn.
+		in := ev.Info.TotalTokenUsage.InputTokens -
+			ev.Info.TotalTokenUsage.CachedInputTokens
+		if in < 0 {
+			in = 0
+		}
+		s.TotalTokensIn = in
+		s.TotalTokensOut = ev.Info.TotalTokenUsage.OutputTokens
+	case cfgCodex.EventItemCompleted:
+		if ev.Item == nil ||
+			ev.Item.Type != cfgCodex.ItemCommandExecution {
+			return
+		}
+		if ev.Item.ExitCode != nil && *ev.Item.ExitCode != 0 {
+			s.HasErrors = true
+		}
 	}
-	s.TotalTokensIn = ev.Info.TotalTokenUsage.InputTokens
-	s.TotalTokensOut = ev.Info.TotalTokenUsage.OutputTokens
 }
 
-// appendMessage adds a converted message to the session and updates
-// the user-turn rollups. Tool-result messages share the user role
-// but carry no text and do not count as turns.
+// appendMessage adds a converted message to the session and, for
+// the first text-bearing user message, sets the preview. TurnCount
+// and the prose gate are computed after the scan (see ParseFile)
+// so TurnCount matches the Claude parser's semantics.
 //
 // Parameters:
 //   - s: session being built
@@ -111,14 +131,38 @@ func (p *Codex) appendMessage(s *entity.Session, msg *entity.Message) {
 	if !msg.BelongsToUser() || msg.Text == "" {
 		return
 	}
-	s.TurnCount++
 	if s.FirstUserMsg == "" {
 		preview := msg.Text
 		if len(preview) > session.PreviewMaxLen {
-			preview = preview[:session.PreviewMaxLen] + token.Ellipsis
+			preview = truncateRunes(
+				preview, session.PreviewMaxLen,
+			) + token.Ellipsis
 		}
 		s.FirstUserMsg = preview
 	}
+}
+
+// truncateRunes cuts a string at the last rune boundary at or
+// before max bytes, so previews never end in a split rune.
+//
+// Parameters:
+//   - s: string to truncate
+//   - max: maximum byte length
+//
+// Returns:
+//   - string: prefix ending on a rune boundary
+func truncateRunes(s string, max int) string {
+	if len(s) <= max {
+		return s
+	}
+	cut := 0
+	for i := range s {
+		if i > max {
+			break
+		}
+		cut = i
+	}
+	return s[:cut]
 }
 
 // convertItem converts a response_item line to a Message.

@@ -84,5 +84,7 @@ done
 # .claude-plugin marketplace still gets working hooks. Keep that file a
 # byte-copy of the canonical Codex manifest.
 cp internal/assets/codex/hooks/hooks.json internal/assets/claude/hooks/codex.json
+jq '.hooks = "./hooks/codex.json"' internal/assets/codex/.codex-plugin/plugin.json \
+  > internal/assets/claude/.codex-plugin/plugin.json
 
 echo "Codex skills synced: $synced updated, $skipped Claude-only (excluded), $removed removed."

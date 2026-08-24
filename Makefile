@@ -435,11 +435,19 @@ sync-codex-skills:
 check-codex-skills:
 	@TMPDIR=$$(mktemp -d) && \
 	cp -r internal/assets/codex/skills/ "$$TMPDIR/before" && \
+	cp internal/assets/claude/hooks/codex.json "$$TMPDIR/codex.json" && \
+	cp internal/assets/claude/.codex-plugin/plugin.json "$$TMPDIR/plugin.json" && \
 	./hack/sync-codex-skills.sh > /dev/null && \
-	if ! diff -rq "$$TMPDIR/before" internal/assets/codex/skills/ > /dev/null 2>&1; then \
-		echo "FAIL: Codex skills are stale — run 'make sync-codex-skills'"; \
+	if ! diff -rq "$$TMPDIR/before" internal/assets/codex/skills/ > /dev/null 2>&1 || \
+	   ! diff -q "$$TMPDIR/codex.json" internal/assets/claude/hooks/codex.json > /dev/null 2>&1 || \
+	   ! diff -q "$$TMPDIR/plugin.json" internal/assets/claude/.codex-plugin/plugin.json > /dev/null 2>&1; then \
+		echo "FAIL: Codex skills or dual-manifest files are stale — run 'make sync-codex-skills'"; \
 		diff -rq "$$TMPDIR/before" internal/assets/codex/skills/ || true; \
+		diff -q "$$TMPDIR/codex.json" internal/assets/claude/hooks/codex.json || true; \
+		diff -q "$$TMPDIR/plugin.json" internal/assets/claude/.codex-plugin/plugin.json || true; \
 		rm -rf internal/assets/codex/skills && cp -r "$$TMPDIR/before" internal/assets/codex/skills; \
+		cp "$$TMPDIR/codex.json" internal/assets/claude/hooks/codex.json; \
+		cp "$$TMPDIR/plugin.json" internal/assets/claude/.codex-plugin/plugin.json; \
 		rm -rf "$$TMPDIR"; \
 		exit 1; \
 	fi; \

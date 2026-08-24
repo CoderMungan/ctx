@@ -141,6 +141,12 @@ write.hook-codex-plugin-active:
     The ctx Codex plugin is enabled in ~/.codex/config.toml, so hooks,
     MCP, and skills already reach every project. Skipping .codex/ and
     .agents/skills/ (Codex would run each hook twice); deploying AGENTS.md only.
+write.hook-codex-project-also:
+  short: |-
+    warning: this project also has a deployed .codex/hooks.json, so
+    Codex will run every ctx hook twice (plugin + project layers).
+    Keep one route: delete .codex/hooks.json and .agents/skills/ to
+    rely on the plugin, or disable the plugin to keep the project files.
 write.hook-codex-plugin-wrong-variant:
   short: |-
     warning: a ctx plugin is enabled in ~/.codex/config.toml but its

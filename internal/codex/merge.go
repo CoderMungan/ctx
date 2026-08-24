@@ -52,50 +52,90 @@ func parseManifest(data []byte) (
 func foreignGroups(groups []json.RawMessage) []json.RawMessage {
 	var kept []json.RawMessage
 	for _, group := range groups {
-		if !managed(group) {
-			kept = append(kept, group)
+		if stripped, keep := withoutManagedHandlers(group); keep {
+			kept = append(kept, stripped)
 		}
 	}
 	return kept
 }
 
-// managed reports whether a matcher group is ctx-managed: it has
-// at least one handler and every handler command starts with the
-// git-root anchor. Unparseable groups are treated as foreign so
-// they survive the merge.
+// withoutManagedHandlers removes ctx-managed handlers from a
+// matcher group. A pure-ctx group is dropped entirely (the fresh
+// embedded groups replace it); a mixed group — the user added
+// their own handler next to ctx's — keeps only the user handlers
+// so a merge never duplicates the ctx hooks AND never deletes
+// user content. Unparseable groups pass through untouched.
 //
 // Parameters:
 //   - group: one matcher group
 //
 // Returns:
-//   - bool: true when every handler is a ctx hook
-func managed(group json.RawMessage) bool {
+//   - json.RawMessage: the group with ctx handlers removed
+//   - bool: false when the group should be dropped
+func withoutManagedHandlers(
+	group json.RawMessage,
+) (json.RawMessage, bool) {
 	fields := map[string]json.RawMessage{}
 	if groupErr := json.Unmarshal(group, &fields); groupErr != nil {
-		return false
+		return group, true
 	}
-	var handlers []map[string]json.RawMessage
+	var handlers []json.RawMessage
 	if handlersErr := json.Unmarshal(
 		fields[cfgCodex.KeyHandlers], &handlers,
 	); handlersErr != nil || len(handlers) == 0 {
+		return group, true
+	}
+
+	var foreign []json.RawMessage
+	for _, h := range handlers {
+		if !managedHandler(h) {
+			foreign = append(foreign, h)
+		}
+	}
+	switch {
+	case len(foreign) == len(handlers):
+		return group, true
+	case len(foreign) == 0:
+		return nil, false
+	}
+	encoded, encodeErr := encode(foreign, "")
+	if encodeErr != nil {
+		return group, true
+	}
+	fields[cfgCodex.KeyHandlers] = json.RawMessage(
+		strings.TrimSpace(string(encoded)),
+	)
+	rebuilt, rebuildErr := encode(fields, "")
+	if rebuildErr != nil {
+		return group, true
+	}
+	return json.RawMessage(strings.TrimSpace(string(rebuilt))), true
+}
+
+// managedHandler reports whether one handler's command carries a
+// ctx-managed prefix (current or any legacy shape).
+//
+// Parameters:
+//   - handler: one handler object
+//
+// Returns:
+//   - bool: true when the command is ctx-managed
+func managedHandler(handler json.RawMessage) bool {
+	fields := map[string]json.RawMessage{}
+	if hErr := json.Unmarshal(handler, &fields); hErr != nil {
 		return false
 	}
-	for _, h := range handlers {
-		var command string
-		if cmdErr := json.Unmarshal(
-			h[cfgCodex.KeyCommand], &command,
-		); cmdErr != nil {
-			return false
-		}
-		current := strings.HasPrefix(command, cfgCodex.HookCommandPrefix)
-		legacy := strings.HasPrefix(
-			command, cfgCodex.LegacyHookCommandPrefix,
-		)
-		if !current && !legacy {
-			return false
-		}
+	var command string
+	if cmdErr := json.Unmarshal(
+		fields[cfgCodex.KeyCommand], &command,
+	); cmdErr != nil {
+		return false
 	}
-	return true
+	return strings.HasPrefix(command, cfgCodex.HookCommandPrefix) ||
+		strings.HasPrefix(
+			command, cfgCodex.LegacyHookCommandPrefixGuardless,
+		) ||
+		strings.HasPrefix(command, cfgCodex.LegacyHookCommandPrefix)
 }
 
 // encode marshals a value without HTML escaping, with the given

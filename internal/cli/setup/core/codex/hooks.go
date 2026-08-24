@@ -31,43 +31,45 @@ import (
 //   - cmd: Cobra command for output messages
 //
 // Returns:
+//   - bool: true when the manifest was written or already current
+//     (false: unparseable existing file, warned and left alone)
 //   - error: Non-nil if the target is not a regular file, the
 //     embedded asset is unreadable, or the write fails
-func deployHooks(cmd *cobra.Command) error {
+func deployHooks(cmd *cobra.Command) (bool, error) {
 	target := cfgSetup.HooksPathCodex
 	if _, validateErr := validateManagedTarget(target); validateErr != nil {
-		return validateErr
+		return false, validateErr
 	}
 
 	embedded, assetErr := agent.CodexHooksJSON()
 	if assetErr != nil {
-		return assetErr
+		return false, assetErr
 	}
 
 	existing, readErr := ctxIo.SafeReadUserFile(target)
 	if readErr != nil && !os.IsNotExist(readErr) {
-		return errFs.FileRead(target, readErr)
+		return false, errFs.FileRead(target, readErr)
 	}
 
 	out, outcome, mergeErr := codex.MergeHooks(existing, embedded)
 	if mergeErr != nil {
 		writeErr.WarnFile(cmd, target, mergeErr)
-		return nil
+		return false, nil
 	}
 	if outcome == codex.OutcomeSkipped {
 		writeSetup.InfoCodexSkipped(cmd, target)
-		return nil
+		return true, nil
 	}
 
 	if writeFileErr := writeManaged(target, out); writeFileErr != nil {
-		return writeFileErr
+		return false, writeFileErr
 	}
 	if outcome == codex.OutcomeMerged {
 		writeSetup.InfoCodexMerged(cmd, target)
-		return nil
+		return true, nil
 	}
 	writeSetup.InfoCodexCreated(cmd, target)
-	return nil
+	return true, nil
 }
 
 // writeManaged writes a managed file, creating its parent

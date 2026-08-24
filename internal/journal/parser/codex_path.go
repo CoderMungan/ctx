@@ -7,9 +7,9 @@
 package parser
 
 import (
-	"os"
 	"path/filepath"
 
+	"github.com/ActiveMemory/ctx/internal/codex"
 	cfgCodex "github.com/ActiveMemory/ctx/internal/config/codex"
 	"github.com/ActiveMemory/ctx/internal/io"
 )
@@ -23,13 +23,9 @@ import (
 // Returns:
 //   - []string: the sessions directory, or nil when it does not exist
 func CodexSessionDirs() []string {
-	codexHome := os.Getenv(cfgCodex.EnvHome)
+	codexHome := codex.Home()
 	if codexHome == "" {
-		home, homeErr := os.UserHomeDir()
-		if homeErr != nil {
-			return nil
-		}
-		codexHome = filepath.Join(home, cfgCodex.DirHome)
+		return nil
 	}
 
 	dir := filepath.Join(codexHome, cfgCodex.DirSessions)

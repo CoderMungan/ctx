@@ -291,6 +291,16 @@ func InfoCodexPluginWrongVariant(cmd *cobra.Command) {
 	cmd.Println()
 }
 
+// InfoCodexProjectAlso warns that a project-local .codex/hooks.json
+// coexists with the enabled plugin, which would run every hook
+// twice; names the file to remove.
+//
+// Parameters:
+//   - cmd: Cobra command for output
+func InfoCodexProjectAlso(cmd *cobra.Command) {
+	cmd.Println(desc.Text(text.DescKeyWriteHookCodexProjectAlso))
+}
+
 // InfoCodexSummary prints the post-write summary for Codex,
 // ending with the /hooks trust reminder.
 //

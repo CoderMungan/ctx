@@ -47,8 +47,8 @@ type shippedHookFile struct {
 // roots and `ctx setup` sources), as repo-relative path segments,
 // with the command prefix each one anchors its commands with. The
 // Claude manifest anchors on `${CLAUDE_PROJECT_DIR}`; the Codex one
-// on [cfgCodex.HookAnchor] (`cd "$(git rev-parse --show-toplevel)"
-// && `). The anchor is stripped before the `ctx …` path is peeled
+// on [cfgCodex.HookPrologue] (the ctx-absent guard plus the
+// git-root anchor). The prefix is stripped before the `ctx …` path is peeled
 // so the `$(…)` quoting never reaches the tokenizer.
 var shippedHookManifests = []struct {
 	segments []string
@@ -63,7 +63,7 @@ var shippedHookManifests = []struct {
 		segments: []string{
 			"internal", "assets", "codex", "hooks", "hooks.json",
 		},
-		anchor: cfgCodex.HookAnchor,
+		anchor: cfgCodex.HookPrologue,
 	},
 }
 

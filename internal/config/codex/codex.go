@@ -105,6 +105,14 @@ const (
 	TOMLBracketOpen = "["
 	// TOMLBracketClose closes an inline array.
 	TOMLBracketClose = "]"
+	// TOMLDot separates key segments in a table header.
+	TOMLDot = "."
+	// TOMLComment starts a TOML comment.
+	TOMLComment = "#"
+	// TOMLQuoteBasic is the basic-string quote for a key segment.
+	TOMLQuoteBasic = `"`
+	// TOMLQuoteLiteral is the literal-string quote for a key segment.
+	TOMLQuoteLiteral = "'"
 )
 
 // Skill frontmatter tokens.
@@ -143,17 +151,30 @@ const (
 	// exits 1 before ctx starts). Recognized so merges migrate
 	// previously deployed groups instead of duplicating them.
 	LegacyHookAnchor = `cd "$(git rev-parse --show-toplevel)" && `
+	// LegacyHookCommandPrefixGuardless is the tolerant anchor
+	// without the ctx-absent guard — the shape deployed between
+	// the anchor fix and the guard fix.
+	LegacyHookCommandPrefixGuardless = HookAnchor + "ctx "
 	// LegacyHookCommandPrefix is [LegacyHookAnchor] followed by a
-	// ctx invocation — the ctx-managed command shape earlier
+	// ctx invocation — the ctx-managed command shape the earliest
 	// builds deployed.
 	LegacyHookCommandPrefix = LegacyHookAnchor + "ctx "
 
-	// HookCommandPrefix is the full prefix of every ctx-managed
-	// hook command: the git-root anchor followed by a ctx binary
-	// invocation. Ownership checks require this whole prefix so
-	// user hooks that merely copy the anchor idiom are never
-	// classified as ctx-managed.
-	HookCommandPrefix = HookAnchor + "ctx "
+	// HookGuard exits a hook silently when the ctx binary is not
+	// on PATH: ctx is an optional companion, and a collaborator
+	// without it must not see a wall of exit-127 hook failures.
+	HookGuard = `command -v ctx >/dev/null 2>&1 || exit 0; `
+
+	// HookPrologue is the full prefix of every shipped hook
+	// command: the ctx-absent guard followed by the git-root
+	// anchor.
+	HookPrologue = HookGuard + HookAnchor
+
+	// HookCommandPrefix is [HookPrologue] followed by a ctx
+	// binary invocation. Ownership checks require this whole
+	// prefix so user hooks that merely copy the anchor idiom are
+	// never classified as ctx-managed.
+	HookCommandPrefix = HookPrologue + "ctx "
 
 	// SessionEndTimeoutMax is the maximum timeout (seconds) Codex
 	// allows for SessionEnd hooks.
@@ -245,6 +266,12 @@ const (
 
 	// EventTokenCount is the event_msg type carrying token usage.
 	EventTokenCount = "token_count"
+	// EventItemCompleted is the event_msg type that mirrors a
+	// finished item; its CommandExecution items carry exit codes.
+	EventItemCompleted = "item_completed"
+	// ItemCommandExecution is the item_completed item type for a
+	// shell command.
+	ItemCommandExecution = "CommandExecution"
 )
 
 // InjectedUserPrefixes are the opening markers of user-role items

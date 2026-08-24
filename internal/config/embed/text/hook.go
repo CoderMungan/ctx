@@ -55,6 +55,9 @@ const (
 	// DescKeyWriteHookCodexPluginActive is the text key for the notice
 	// printed when the ctx Codex plugin already provides hooks/skills/MCP.
 	DescKeyWriteHookCodexPluginActive = "write.hook-codex-plugin-active"
+	// DescKeyWriteHookCodexProjectAlso is the text key for the warning
+	// that project-local hooks coexist with the enabled plugin.
+	DescKeyWriteHookCodexProjectAlso = "write.hook-codex-project-also"
 	// DescKeyWriteHookCodexPluginWrongVariant is the text key for the
 	// warning printed when the enabled plugin is the legacy Claude
 	// Code variant and the project-local route is deployed instead.

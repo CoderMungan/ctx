@@ -185,8 +185,9 @@ func TestCodexParser_ParseFile_Probe(t *testing.T) {
 	if users[0].Text != wantPrompt {
 		t.Errorf("user text = %q", users[0].Text)
 	}
-	if s.TurnCount != 1 {
-		t.Errorf("TurnCount = %d, want 1", s.TurnCount)
+	// 1 prose turn + 1 tool-result user message (Claude parity).
+	if s.TurnCount != 2 {
+		t.Errorf("TurnCount = %d, want 2", s.TurnCount)
 	}
 	if s.FirstUserMsg != wantPrompt {
 		t.Errorf("FirstUserMsg = %q", s.FirstUserMsg)
@@ -238,13 +239,14 @@ func TestCodexParser_ParseFile_Probe(t *testing.T) {
 	}
 
 	// Tokens come from the LAST cumulative token_count event.
-	if s.TotalTokensIn != 32328 {
-		t.Errorf("TotalTokensIn = %d, want 32328", s.TotalTokensIn)
+	if s.TotalTokensIn != 32328-26112 {
+		t.Errorf("TotalTokensIn = %d, want cache-adjusted 6216",
+			s.TotalTokensIn)
 	}
 	if s.TotalTokensOut != 116 {
 		t.Errorf("TotalTokensOut = %d, want 116", s.TotalTokensOut)
 	}
-	if s.TotalTokens != 32328+116 {
+	if s.TotalTokens != 6216+116 {
 		t.Errorf("TotalTokens = %d", s.TotalTokens)
 	}
 	if s.HasErrors {
@@ -328,11 +330,13 @@ func TestCodexParser_ParseFile_Malformed(t *testing.T) {
 	if len(s.Messages) != 6 {
 		t.Errorf("expected 6 messages, got %d", len(s.Messages))
 	}
-	if s.TurnCount != 1 {
-		t.Errorf("TurnCount = %d, want 1", s.TurnCount)
+	// 1 prose turn + 2 tool-result user messages (Claude parity).
+	if s.TurnCount != 3 {
+		t.Errorf("TurnCount = %d, want 3", s.TurnCount)
 	}
-	if s.TotalTokensIn != 1000 || s.TotalTokensOut != 20 {
-		t.Errorf("tokens = %d/%d", s.TotalTokensIn, s.TotalTokensOut)
+	if s.TotalTokensIn != 800 || s.TotalTokensOut != 20 {
+		t.Errorf("tokens = %d/%d, want cache-adjusted 800/20",
+			s.TotalTokensIn, s.TotalTokensOut)
 	}
 
 	wantEnd := time.Date(2026, 8, 23, 21, 0, 10, 500_000_000, time.UTC)

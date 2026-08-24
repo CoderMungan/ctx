@@ -34,7 +34,7 @@ func TestDeployHooks_MergesForeignAndStaleGroups(t *testing.T) {
 `))
 
 	var buf bytes.Buffer
-	if err := deployHooks(testCmd(&buf)); err != nil {
+	if _, err := deployHooks(testCmd(&buf)); err != nil {
 		t.Fatalf("deployHooks: %v", err)
 	}
 	got := readFile(t, cfgSetup.HooksPathCodex)
@@ -64,7 +64,7 @@ func TestDeployHooks_MergesForeignAndStaleGroups(t *testing.T) {
 
 	// Second run: skipped and byte-identical.
 	buf.Reset()
-	if err := deployHooks(testCmd(&buf)); err != nil {
+	if _, err := deployHooks(testCmd(&buf)); err != nil {
 		t.Fatalf("second deployHooks: %v", err)
 	}
 	if !bytes.Equal(got, readFile(t, cfgSetup.HooksPathCodex)) {
@@ -81,7 +81,7 @@ func TestDeployHooks_InvalidJSONLeftUntouched(t *testing.T) {
 	seedFile(t, cfgSetup.HooksPathCodex, broken)
 
 	var buf bytes.Buffer
-	if err := deployHooks(testCmd(&buf)); err != nil {
+	if _, err := deployHooks(testCmd(&buf)); err != nil {
 		t.Fatalf("deployHooks must warn, not fail: %v", err)
 	}
 	if !bytes.Equal(readFile(t, cfgSetup.HooksPathCodex), broken) {
@@ -111,7 +111,7 @@ func TestDeployHooks_RejectsDirectoryTarget(t *testing.T) {
 	if err := mkdirAll(cfgSetup.HooksPathCodex); err != nil {
 		t.Fatal(err)
 	}
-	if err := deployHooks(testCmd(&bytes.Buffer{})); err == nil {
+	if _, err := deployHooks(testCmd(&bytes.Buffer{})); err == nil {
 		t.Fatal("expected non-regular target rejection")
 	}
 }

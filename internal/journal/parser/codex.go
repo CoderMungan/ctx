@@ -137,7 +137,20 @@ func (p *Codex) ParseFile(path string) ([]*entity.Session, error) {
 		return nil, errParser.ScanFile(scanErr)
 	}
 
-	if s.TurnCount == 0 {
+	// TurnCount matches the Claude parser: every user-role
+	// message counts, including tool results. Sessions with no
+	// user PROSE (only injected/tool traffic) are still skipped.
+	prose := 0
+	for _, msg := range s.Messages {
+		if !msg.BelongsToUser() {
+			continue
+		}
+		s.TurnCount++
+		if msg.Text != "" {
+			prose++
+		}
+	}
+	if prose == 0 {
 		return nil, nil
 	}
 

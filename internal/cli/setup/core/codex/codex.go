@@ -34,6 +34,12 @@ func Deploy(cmd *cobra.Command) error {
 	if codex.PluginEnabled(home) {
 		if codex.PluginNativeVariant(home) {
 			writeSetup.InfoCodexPluginActive(cmd)
+			if codex.ProjectConfigured() {
+				// A previously deployed project route would
+				// make every hook run twice next to the
+				// plugin; tell the user which file to remove.
+				writeSetup.InfoCodexProjectAlso(cmd)
+			}
 			deployAgents(cmd)
 			writeSetup.InfoCodexSummaryPlugin(cmd)
 			return nil
@@ -45,7 +51,8 @@ func Deploy(cmd *cobra.Command) error {
 		writeSetup.InfoCodexPluginWrongVariant(cmd)
 	}
 
-	if hooksErr := deployHooks(cmd); hooksErr != nil {
+	hooksOK, hooksErr := deployHooks(cmd)
+	if hooksErr != nil {
 		return hooksErr
 	}
 
@@ -59,6 +66,8 @@ func Deploy(cmd *cobra.Command) error {
 		writeErr.WarnFile(cmd, cfgSetup.SkillsPathCodex, skillErr)
 	}
 
-	writeSetup.InfoCodexSummary(cmd)
+	if hooksOK {
+		writeSetup.InfoCodexSummary(cmd)
+	}
 	return nil
 }

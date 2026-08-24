@@ -313,6 +313,18 @@ type codexRawPart struct {
 type codexRawEvent struct {
 	Type string             `json:"type"`
 	Info *codexRawTokenInfo `json:"info,omitempty"`
+	Item *codexRawEventItem `json:"item,omitempty"`
+}
+
+// codexRawEventItem is the completed item inside an item_completed
+// event; only the error-signal fields are decoded.
+//
+// Fields:
+//   - Type: item discriminator (e.g. CommandExecution)
+//   - ExitCode: command exit status, when the item is a command
+type codexRawEventItem struct {
+	Type     string `json:"type"`
+	ExitCode *int   `json:"exit_code,omitempty"`
 }
 
 // codexRawTokenInfo is the info block of a token_count event.

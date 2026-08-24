@@ -230,10 +230,10 @@ func TestCodexHooksManifestShape(t *testing.T) {
 						cfgCodex.HandlerTypeCommand,
 					)
 				}
-				if !strings.HasPrefix(h.Command, cfgCodex.HookAnchor) {
+				if !strings.HasPrefix(h.Command, cfgCodex.HookPrologue) {
 					t.Errorf(
 						"%s hook %q does not start with the git-root anchor %q",
-						event, h.Command, cfgCodex.HookAnchor,
+						event, h.Command, cfgCodex.HookPrologue,
 					)
 				}
 				if event == cfgCodex.EventSessionEnd &&
@@ -256,7 +256,7 @@ func TestCodexHooksManifestShape(t *testing.T) {
 // justified by a Claude counterpart.
 func TestCodexHooksParityWithClaude(t *testing.T) {
 	claude := tails(t, claudeHooksPath, readClaudeHooks(t), claudeHookAnchor)
-	codex := tails(t, asset.PathCodexHooksJSON, readCodexHooks(t), cfgCodex.HookAnchor)
+	codex := tails(t, asset.PathCodexHooksJSON, readCodexHooks(t), cfgCodex.HookPrologue)
 
 	// Claude → Codex: every Claude hook has a Codex counterpart
 	// under the mapped event with a compatible matcher.
@@ -282,6 +282,12 @@ func TestCodexHooksParityWithClaude(t *testing.T) {
 
 	// Codex → Claude: every Codex hook traces back to a Claude hook.
 	for codexEvent, entries := range codex {
+		if codexEvent == cfgCodex.EventStop {
+			// Codex-only: the async Stop-hook journal import has
+			// no Claude counterpart (Claude imports on SessionEnd
+			// without Codex's 3-second cap).
+			continue
+		}
 		for _, e := range entries {
 			found := false
 			for claudeEvent, claudeEntries := range claude {
@@ -349,7 +355,7 @@ func TestCodexHooksParityWithClaude(t *testing.T) {
 // heartbeat last).
 func TestCodexHooksUserPromptSubmitOrder(t *testing.T) {
 	claude := tails(t, claudeHooksPath, readClaudeHooks(t), claudeHookAnchor)
-	codex := tails(t, asset.PathCodexHooksJSON, readCodexHooks(t), cfgCodex.HookAnchor)
+	codex := tails(t, asset.PathCodexHooksJSON, readCodexHooks(t), cfgCodex.HookPrologue)
 
 	var want, got []string
 	for _, e := range claude[cfgCodex.EventUserPromptSubmit] {
