@@ -28,6 +28,16 @@ DO NOT UPDATE FOR:
 -->
 
 
+## [2026-08-23-170949] Hook commands must survive four shells and hostile cwds; hosts punish pre-ctx aborts
+
+**Context**: Adversarial audit of every ctx hook surface (Claude/Codex/Copilot manifests, 16 Copilot wrapper scripts, OpenCode plugin, trace hook, plugin-reload) after the Codex non-repo-cwd anchor bug: 20 confirmed defects in 7 classes.
+
+**Lesson**: Recurring classes: (1) ${VAR:?} aborts have SHELL-DEPENDENT exit codes (127 bash, 1 zsh, 2 dash) and exit 2 means BLOCK to Claude Code — never use :? in hook commands; guard with [ -d ... ] || { echo remedy >&2; exit 1; }. (2) Hosts may run hooks from non-repo cwds (Codex: plugin cache) — anchor with git rev-parse ... || pwd, or the host's schema-native cwd field (Copilot: "cwd": "."). (3) set -euo pipefail + jq/grep in command substitutions aborts whole hooks on non-JSON stdin — append || true inside the substitution. (4) INPUT=$(cat) hangs on host-held pipes — bound reads or < /dev/null. (5) Dead wrapper scripts accumulate real bugs invisibly; if a manifest calls ctx directly, ship no scripts.
+
+**Application**: When adding any hook surface, test the command matrix under sh/bash3.2/zsh/dash from repo root, a subdir, a non-repo dir, with ctx absent, and with stdin held open. See specs/hook-surface-robustness.md.
+
+---
+
 ## [2026-08-23-162206] Codex marketplace resolution diverges between CLI and TUI; dual-manifest plugin roots close it
 
 **Context**: With both .agents/plugins/marketplace.json and legacy .claude-plugin/marketplace.json at the same root (same marketplace name, same plugin name), codex 0.148/0.149 CLI 'plugin add' resolved the .agents one, but the 0.149 TUI /plugins browser re-materialized the cache from the LEGACY one — silently swapping the installed ctx plugin back to the Claude variant whose ${CLAUDE_PROJECT_DIR:?} hooks all exit 1 under Codex (seen live as 13 UserPromptSubmit + 4 PreToolUse hook failures).

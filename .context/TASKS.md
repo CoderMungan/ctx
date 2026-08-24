@@ -3075,6 +3075,8 @@ E5[T15–20] E6[T21–23] = 23.
 
 ### Codex integration (OpenAI Codex CLI as a full ctx peer of Claude Code)
 
+- [ ] [CX8] Windows parity for hook manifests: commandWindows overrides for the Codex manifest and a cross-shell ctx-absent guard for the Copilot CLI manifest command slot (command -v is POSIX-only; Windows runs PowerShell). Spec: specs/hook-surface-robustness.md #priority:medium #session:581183bc #branch:feat/codex-integration #commit:dcbade1d #added:2026-08-23-171002
+
 
 
 
