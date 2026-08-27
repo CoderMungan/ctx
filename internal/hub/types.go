@@ -145,7 +145,9 @@ type Server struct {
 // Fields:
 //   - mu: serializes subscribe/unsubscribe/broadcast
 //   - subs: active listener channels
-//   - dropped: count of disconnected slow listeners
+//   - dropped: count of disconnected slow listeners; accessed
+//     with sync/atomic so readers on other goroutines (the
+//     Status RPC handler) never take the broadcast mutex
 type fanOut struct {
 	mu      sync.Mutex
 	subs    map[chan []Entry]struct{}
@@ -273,11 +275,13 @@ type EntryMsg struct {
 // Fields:
 //   - TotalEntries: total number of entries
 //   - ConnectedClients: active listener count
+//   - DroppedListeners: cumulative slow-listener disconnects
 //   - EntriesByType: entry count per type
 //   - EntriesByProject: entry count per origin project
 type StatusResponse struct {
 	TotalEntries     uint64            `json:"total_entries"`
 	ConnectedClients uint32            `json:"connected_clients"`
+	DroppedListeners uint64            `json:"dropped_listeners"`
 	EntriesByType    map[string]uint64 `json:"entries_by_type"`
 	EntriesByProject map[string]uint64 `json:"entries_by_project"`
 }

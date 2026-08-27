@@ -6,6 +6,13 @@
 
 package hub
 
+import (
+	"sync/atomic"
+
+	cfgWarn "github.com/ActiveMemory/ctx/internal/config/warn"
+	logWarn "github.com/ActiveMemory/ctx/internal/log/warn"
+)
+
 // fanOutBuffer is the channel buffer size for each listener.
 const fanOutBuffer = 64
 
@@ -47,7 +54,9 @@ func (f *fanOut) unsubscribe(ch chan []Entry) {
 
 // broadcast sends entries to all active listeners.
 // Non-blocking: slow listeners get disconnected to prevent
-// unbounded buffering.
+// unbounded buffering. Each disconnect emits a warning so the
+// event is visible to operators rather than only bumping a
+// counter.
 //
 // Parameters:
 //   - entries: entries to deliver to all subscribers
@@ -62,7 +71,10 @@ func (f *fanOut) broadcast(entries []Entry) {
 			// Slow listener: disconnect to prevent loss.
 			delete(f.subs, ch)
 			close(ch)
-			f.dropped++
+			logWarn.Warn(
+				cfgWarn.HubFanOutSlowListener,
+				atomic.AddUint64(&f.dropped, 1),
+			)
 		}
 	}
 }
@@ -79,4 +91,15 @@ func (f *fanOut) count() uint32 {
 		n = 0
 	}
 	return uint32(n) //nolint:gosec // len is non-negative
+}
+
+// droppedCount returns the cumulative number of listeners
+// disconnected for being too slow. The read is atomic rather
+// than mutex-guarded so the Status RPC handler never contends
+// with an in-flight broadcast.
+//
+// Returns:
+//   - uint64: cumulative slow-listener disconnects
+func (f *fanOut) droppedCount() uint64 {
+	return atomic.LoadUint64(&f.dropped)
 }

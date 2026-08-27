@@ -245,6 +245,7 @@ func (s *Server) hubStatus(
 	return &StatusResponse{
 		TotalEntries:     total,
 		ConnectedClients: s.listeners.count(),
+		DroppedListeners: s.listeners.droppedCount(),
 		EntriesByType:    byType,
 		EntriesByProject: byProject,
 	}, nil

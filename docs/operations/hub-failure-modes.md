@@ -34,6 +34,26 @@ its last-seen sequence; the hub replays everything newer.
 **What you should do:** nothing. If reconnects are looping, check
 firewall state on the hub and `ctx hub status` output.
 
+### Slow Listener Disconnected
+
+**What happens:** each `ctx connection listen` stream gets a
+buffered fan-out channel. A client that stops draining it (paused
+process, saturated link, a laptop that went to sleep) fills the
+buffer. Rather than block every publisher or silently discard the
+client's entries, the hub disconnects that one listener and closes
+its channel. The client sees an EOF and reconnects with its
+last-seen sequence, so the missed entries are replayed. Nothing is
+lost; the reconnect is the recovery.
+
+Each disconnect writes a warning to the hub's stderr and increments
+a cumulative counter reported as `Dropped listeners:` in
+`ctx hub status`.
+
+**What you should do:** an occasional disconnect is normal and
+self-healing. A count that climbs steadily means listeners cannot
+keep up with the publish rate — check the listening client's health
+and the link to it before assuming the hub is at fault.
+
 ### Partition: Majority Side Reachable
 
 **What happens:** clients routed to the majority side continue to

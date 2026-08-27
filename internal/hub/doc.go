@@ -62,8 +62,12 @@
 //
 // [Store] guards its indexes and appender with a
 // single mutex. Listen streams subscribe to a
-// fan-out channel; slow subscribers are dropped
-// rather than blocking publishers.
+// fan-out channel; a subscriber that lets its buffer
+// fill is disconnected rather than blocking
+// publishers or silently losing entries. Each
+// disconnect warns on stderr and bumps a cumulative
+// counter reported as DroppedListeners by the Status
+// RPC.
 //
 // # Encryption
 //
